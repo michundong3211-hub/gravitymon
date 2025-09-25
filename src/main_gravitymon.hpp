@@ -126,6 +126,18 @@ SOFTWARE.
 #define PIN_CFG2 A4
 #define CFG_FILENAMEBIN "custom-tenstar_esp32c3_super_mini.bin"
 
+#elif defined(ESP32_C3_DEVKITM_1)
+
+// Hardware config for ESP32-c3-mini, iSpindel hardware
+// ------------------------------------------------------
+#define PIN_SDA 4
+#define PIN_SCL 5
+#define PIN_DS A0
+#define PIN_VOLT A3
+#define PIN_CFG1 A5
+#define PIN_CFG2 A4
+#define CFG_FILENAMEBIN "firmware32c3mini_ckbrew.bin"
+
 #else
 #warning "Unknown board type"
 #endif

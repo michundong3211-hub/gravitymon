@@ -52,15 +52,10 @@ SOFTWARE.
 
 #elif defined(LOLIN_C3_MINI)
 // Hardware config for ESP32-c3-mini, iSpindel hardware
+// 在 Lolin C3 Mini 开发板基础上，将 LED 改到 GPIO8 引脚上
 // ------------------------------------------------------
-#if defined(JTAG_DEBUG)
-#define PIN_SDA 8
-#define PIN_SCL 9
-#warning "ESP32C3 JTAG debugging enabled, using GYRO on GPIO 8/9"
-#else
 #define PIN_SDA 7
 #define PIN_SCL 6
-#endif  // JTAG_DEBUG
 #define PIN_DS A0
 #define PIN_VOLT A3
 #define PIN_CFG1 A5

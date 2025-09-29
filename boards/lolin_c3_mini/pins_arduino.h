@@ -10,8 +10,8 @@ static const uint8_t LED_BUILTIN = 8;
 static const uint8_t TX = 21;
 static const uint8_t RX = 20;
 
-static const uint8_t SDA = 8;
-static const uint8_t SCL = 10;
+static const uint8_t SDA = 7;
+static const uint8_t SCL = 6;
 
 static const uint8_t SS    = 5;
 static const uint8_t MOSI  = 4;

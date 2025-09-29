@@ -165,6 +165,8 @@ void setup() {
   switch (runMode) {
     case RunMode::wifiSetupMode:
       // We cant use LED on ESP32C3 since that pin is connected to GYRO
+      Log.notice(F("LED: BUILTIN_LED=%d, LED_BUILTIN=%d, PIN_SDA=%d, PIN_SCL=%d, Setting LED to RED for wifi setup mode." CR), 
+                 BUILTIN_LED, LED_BUILTIN, PIN_SDA, PIN_SCL);
       ledOn(LedColor::RED);  // Red or fast flashing to indicate connection
                              // error
       myWifi.enableImprov(true);
@@ -221,6 +223,8 @@ void setup() {
     case RunMode::configurationMode:
       if (myWifi.isConnected()) {
         // We cant use LED on ESP32C3 since that pin is connected to GYRO
+        Log.notice(F("LED: BUILTIN_LED=%d, LED_BUILTIN=%d, PIN_SDA=%d, PIN_SCL=%d, Setting LED to BLUE for config mode." CR), 
+                   BUILTIN_LED, LED_BUILTIN, PIN_SDA, PIN_SCL);
         ledOn(LedColor::BLUE);  // Blue or slow flashing to indicate config mode
 
         Log.notice(F("Main: Switching gyro to continous." CR));
@@ -238,6 +242,8 @@ void setup() {
           mySerial.begin(&mySerialWebSocket);
       } else {
         // We cant use LED on ESP32C3 since that pin is connected to GYRO
+        Log.notice(F("LED: BUILTIN_LED=%d, LED_BUILTIN=%d, PIN_SDA=%d, PIN_SCL=%d, Setting LED to RED for connection error." CR), 
+                   BUILTIN_LED, LED_BUILTIN, PIN_SDA, PIN_SCL);
         ledOn(LedColor::RED);  // Red or fast flashing to indicate connection
                                // error
       }
@@ -245,6 +251,8 @@ void setup() {
 
     default:
       // We cant use LED on ESP32C3 since that pin is connected to GYRO
+      Log.notice(F("LED: BUILTIN_LED=%d, LED_BUILTIN=%d, PIN_SDA=%d, PIN_SCL=%d, Setting LED to GREEN for gravity mode." CR), 
+                 BUILTIN_LED, LED_BUILTIN, PIN_SDA, PIN_SCL);
       ledOn(
           LedColor::GREEN);  // Green or fast flashing to indicate gravity mode
       break;
@@ -306,6 +314,8 @@ bool loopReadGravity() {
     velocity = gv.getVelocity();
 #endif
 
+    Log.notice(F("LED: BUILTIN_LED=%d, LED_BUILTIN=%d, PIN_SDA=%d, PIN_SCL=%d." CR), 
+                 BUILTIN_LED, LED_BUILTIN, PIN_SDA, PIN_SCL);
     Log.warning(F("Main: Angle: %F (%F), Velocity: %F" CR), angle,
                 filteredAngle, velocity);
 

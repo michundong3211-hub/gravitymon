@@ -136,13 +136,19 @@ GyroResultData MPU6050Gyro::readSensor(GyroMode mode) {
 #endif
   }
 
-  raw.ax = average.ax / noIterations;
-  raw.ay = average.ay / noIterations;
-  raw.az = average.az / noIterations;
-  raw.gx = average.gx / noIterations;
-  raw.gy = average.gy / noIterations;
-  raw.gz = average.gz / noIterations;
-  raw.temp = average.temp / noIterations;
+  // Protect against division by zero
+  if (noIterations > 0) {
+    raw.ax = average.ax / noIterations;
+    raw.ay = average.ay / noIterations;
+    raw.az = average.az / noIterations;
+    raw.gx = average.gx / noIterations;
+    raw.gy = average.gy / noIterations;
+    raw.gz = average.gz / noIterations;
+    raw.temp = average.temp / noIterations;
+  } else {
+    Log.error(F("GYRO: No iterations performed, using zero values." CR));
+    raw.ax = raw.ay = raw.az = raw.gx = raw.gy = raw.gz = raw.temp = 0;
+  }
 
 #if defined(GYRO_SHOW_MINMAX) && LOG_LEVEL == 6
   Log.verbose(F("GYRO: Min    \t%d\t%d\t%d\t%d\t%d\t%d\t%d." CR), min.ax,
@@ -195,13 +201,19 @@ void MPU6050Gyro::calibrateSensor() {
 #if LOG_LEVEL == 6
   Log.verbose(F("GYRO: Calibrating sensor" CR));
 #endif
-  // _accelgyro.PrintActiveOffsets();
-  // EspSerial.print( CR );
+  EspSerial.printf("Accel full scale range: %d\n", _accelgyro.getFullScaleAccelRange());
+  EspSerial.printf("Gyro full scale range: %d\n", _accelgyro.getFullScaleGyroRange());
+
+  int16_t ax, ay, az, gx, gy, gz;
+  _accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+  EspSerial.printf("Raw accel: %d, %d, %d | Raw gyro: %d, %d, %d\n", ax, ay, az, gx, gy, gz);
+
+  int16_t temp = _accelgyro.getTemperature();
+  EspSerial.printf("Temperature: %.2f C\n", temp / 100.0);
 
   _accelgyro.setDLPFMode(MPU6050_DLPF_BW_5);
   _accelgyro.CalibrateAccel(6);  // 6 = 600 readings
   _accelgyro.CalibrateGyro(6);
-
   _accelgyro.PrintActiveOffsets();
   EspSerial.print(CR);
 
@@ -279,13 +291,17 @@ void MPU6050Gyro::debug() {
 }
 
 const char *MPU6050Gyro::getGyroFamily() {
-  switch (_accelgyro.getDeviceID()) {
+  const uint8_t who = _accelgyro.getDeviceID();
+  switch (who) {
     case 0x34:
       return "MPU6050";
     case 0x38:
       return "MPU6500";
-    default:
-      return "";
+    default: {
+      static char buffer[16];
+      snprintf(buffer, sizeof(buffer), "0x%02X", who);
+      return buffer;
+    }
   }
 }
 

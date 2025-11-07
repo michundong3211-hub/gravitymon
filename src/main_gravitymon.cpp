@@ -453,7 +453,7 @@ void goToSleep(int sleepInterval) {
   PERF_PUSH();
 
   if (myConfig.isBatterySaving() &&
-      getBatteryPercentage(volt, BatteryType::LithiumIon) < 30) {
+      getBatteryPercentage(volt, BatteryType::LithiumIon) < 25) {
     sleepInterval = 3600;
     Log.notice(F("MAIN: Battery saving is enabled, sleeping for %ds." CR),
                sleepInterval);
@@ -548,7 +548,7 @@ void checkSleepMode(float angle, float volt) {
               (angle > 85 && angle < 95)) ||
              (volt > myConfig.getVoltageConfig())) {
     runMode = RunMode::configurationMode;
-  } else if (angle < 5 && myConfig.isStorageSleep()) {
+  } else if (angle < 15 && myConfig.isStorageSleep()) {
     runMode = RunMode::storageMode;
   } else {
     runMode = RunMode::measurementMode;

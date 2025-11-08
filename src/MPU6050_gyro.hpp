@@ -47,7 +47,7 @@ class MPU6050Gyro : public GyroSensorInterface {
     _accelgyro = MPU6050(addr);
   }
   bool setup(GyroMode mode, bool force);
-  void calibrateSensor();
+  bool calibrateSensor();
   GyroMode enterSleep(GyroMode mode);
   GyroResultData readSensor(GyroMode mode);
   const char* getGyroFamily();

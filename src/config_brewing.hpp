@@ -73,7 +73,7 @@ class BrewingConfig : public BaseConfig,
 #endif
   BatteryType _batteryType;
 
-  float _voltageConfig = 4.15;
+  float _voltageConfig = 4.2;
   float _tempSensorAdjC = 0;
   int _sleepInterval = 900;
 
@@ -94,7 +94,7 @@ class BrewingConfig : public BaseConfig,
   int _pushIntervalInflux = 0;
   int _pushIntervalMqtt = 0;
 
-  int _tempSensorResolution = 9;  // bits
+  int _tempSensorResolution = 11;  // bits
 
  public:
   explicit BrewingConfig(String baseMDNS, String fileName);

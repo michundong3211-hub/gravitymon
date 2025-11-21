@@ -59,7 +59,7 @@ SOFTWARE.
 
 const char* CFG_FILENAME = "/gravitymon2.json";
 const char* CFG_AP_SSID = "GravityMon";
-const char* CFG_AP_PASS = "password";
+const char* CFG_AP_PASS = "";
 
 #if !defined(USER_SSID)
 #define USER_SSID ""
@@ -493,7 +493,7 @@ void loop() {
       }
 
       if (loopReadGravity()) {
-        goToSleep(myConfig.getSleepInterval());
+        goToSleep(myConfig.getSleepInterval());   //TODO 将 wifi 和 bluetooth 的 sleepIntarval 取最大公约数
       }
 
       // If the sensor is moving and we are not getting a clear reading, we

@@ -95,6 +95,9 @@ const char iGravityHttpPostFormat[] PROGMEM =
     "\"RSSI\": ${rssi}, "
     "\"corr-gravity\": ${corr-gravity}, "
     "\"gravity-unit\": \"${gravity-unit}\", "
+    "\"ip-address\": \"${ip-address}\","
+    "\"app-ver\": \"${app-ver}\","
+    "\"run-mode\": \"${run-mode}\","
     "\"run-time\": ${run-time} "
     "}";
 

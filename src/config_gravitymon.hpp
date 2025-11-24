@@ -68,7 +68,7 @@ struct RawFormulaData {
 
 class GravitymonConfig : public BrewingConfig, public GyroConfigInterface {
  private:
-  String _gravityFormula = "";
+  String _gravityFormula = "0.979742642057399+0.0005883931405567239*tilt+0.000008876047085889598*tilt*tilt";
   String _bleTiltColor;
 
   RawGyroData _gyroCalibration = {0, 0, 0, 0, 0, 0};

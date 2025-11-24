@@ -385,7 +385,9 @@ bool loopReadGravity() {
           setupTemplateEngineGravity(&myConfig, engine, angle, velocity,
                                      gravitySG, corrGravitySG, tempC,
                                      (millis() - runtimeMillis) / 1000,
-                                     myBatteryVoltage.getVoltage());
+                                     myBatteryVoltage.getVoltage(),
+                                     WiFi.localIP().toString(),
+                                     runMode);
           String tpl = push.getTemplate(BrewingPush::GRAVITY_TEMPLATE_HTTP1,
                                         true);  // Use default post template
           String payload = engine.create(tpl.c_str());
@@ -404,7 +406,9 @@ bool loopReadGravity() {
           setupTemplateEngineGravity(&myConfig, engine, angle, velocity,
                                      gravitySG, corrGravitySG, tempC,
                                      (millis() - runtimeMillis) / 1000,
-                                     myBatteryVoltage.getVoltage());
+                                     myBatteryVoltage.getVoltage(),
+                                     WiFi.localIP().toString(),
+                                     runMode);
           push.sendAll(engine, BrewingPush::MeasurementType::GRAVITY);
         }
       }

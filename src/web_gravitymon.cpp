@@ -164,7 +164,9 @@ void GravitymonWebServer::doTaskPushTestSetup(TemplatingEngine &engine,
 
   setupTemplateEngineGravity(_gravConfig, engine, angle, 0, gravitySG,
                              corrGravitySG, tempC, 1.0,
-                             myBatteryVoltage.getVoltage());
+                             myBatteryVoltage.getVoltage(),
+                             WiFi.localIP().toString(),
+                             runMode);
 
   Log.notice(F("WEB : Running scheduled push test for %s" CR),
              _pushTestTarget.c_str());

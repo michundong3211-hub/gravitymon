@@ -38,7 +38,7 @@ void setupTemplateEngineGravity(GravitymonConfig* config,
                                 TemplatingEngine& engine, float angle,
                                 float velocity, float gravitySG,
                                 float corrGravitySG, float tempC, float runTime,
-                                float voltage) {
+                                float voltage, String ipAddress, RunMode runMode) {
   // Names
   engine.setVal(TPL_MDNS, config->getMDNS());
   engine.setVal(TPL_ID, config->getID());
@@ -91,6 +91,9 @@ void setupTemplateEngineGravity(GravitymonConfig* config,
 
   engine.setVal(TPL_APP_VER, CFG_APPVER);
   engine.setVal(TPL_APP_BUILD, CFG_GITREV);
+
+  engine.setVal(TPL_IP_ADDRESS, ipAddress);
+  engine.setVal(TPL_RUN_MODE, runMode);
 }
 
 #endif  // GRAVITYMON

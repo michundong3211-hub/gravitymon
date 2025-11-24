@@ -33,7 +33,7 @@ void setupTemplateEngineGravity(GravitymonConfig* config,
                                 TemplatingEngine& engine, float angle,
                                 float velocity, float gravitySG,
                                 float corrGravitySG, float tempC, float runTime,
-                                float voltage);
+                                float voltage, String ipAddress, RunMode runMode);
 
 #endif  // GRAVITYMON
 

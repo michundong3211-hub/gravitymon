@@ -58,7 +58,7 @@ SOFTWARE.
 #endif
 
 const char* CFG_FILENAME = "/gravitymon2.json";
-const char* CFG_AP_SSID = "GravityMon";
+const char* CFG_AP_SSID = "CuckooTilt";
 const char* CFG_AP_PASS = "";
 
 #if !defined(USER_SSID)

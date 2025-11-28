@@ -457,7 +457,7 @@ void goToSleep(int sleepInterval) {
   PERF_PUSH();
 
   if (myConfig.isBatterySaving() &&
-      getBatteryPercentage(volt, BatteryType::LithiumIon) < 25) {
+      getBatteryPercentage(volt, BatteryType::LithiumIon) < 41.67) {
     sleepInterval = 3600;
     Log.notice(F("MAIN: Battery saving is enabled, sleeping for %ds." CR),
                sleepInterval);
@@ -597,22 +597,24 @@ void checkSleepMode(float angle, float volt) {
     delay(100);
     ledOff();
 #if defined(ESP8266)
-    ESP.deepSleep(0);  // indefinite sleep
+    uint32_t wake8266 = 60 * 60 * 1000000;
+    ESP.deepSleep(wake8266);
 #else
-#if defined(PIN_CHARGING)
+ #if defined(PIN_CHARGING)
     if (myConfig.isPinChargingMode()) {
-#if defined(ESP32C3)
+  #if defined(ESP32C3)
       pinMode(PIN_CHARGING, INPUT_PULLDOWN);
       esp_deep_sleep_enable_gpio_wakeup(1ULL << PIN_CHARGING,
-                                        ESP_GPIO_WAKEUP_GPIO_LOW);
-#elif defined(ESP32S2) || defined(ESP32S3)
+                                        ESP_GPIO_WAKEUP_GPIO_LOW); 
+  #elif defined(ESP32S2) || defined(ESP32S3)
       esp_sleep_enable_ext1_wakeup(1ULL << PIN_CHARGING,
                                    ESP_EXT1_WAKEUP_ANY_LOW);
-#endif
+  #endif
       esp_deep_sleep_start();
     }
-#endif
-    ESP.deepSleep(0xFFFFFFFF);  // indefinite sleep
+ #endif
+    uint32_t wake32 = 60 * 60 * 1000000;
+    ESP.deepSleep(wake32);
 #endif
   }
 }

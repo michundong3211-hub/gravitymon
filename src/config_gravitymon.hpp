@@ -80,7 +80,7 @@ class GravitymonConfig : public BrewingConfig, public GyroConfigInterface {
 
   bool _gravityTempAdj = false;
   bool _ignoreLowAngles = false;
-  bool _storageSleep = false;
+  bool _storageSleep = true;
   bool _gyroSwapXY = false;
   bool _gyroFilter = false;
   bool _gyroTemp = false;

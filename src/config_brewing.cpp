@@ -68,6 +68,10 @@ void BrewingConfig::parseJson(JsonObject& doc) {
 
   if (!doc[CONFIG_SLEEP_INTERVAL].isNull())
     setSleepInterval(doc[CONFIG_SLEEP_INTERVAL].as<int>());
+  if (!doc[CONFIG_HTTP_POST_SLEEP_INTERVAL].isNull())
+    setHttpPostSleepInterval(doc[CONFIG_HTTP_POST_SLEEP_INTERVAL].as<int>());
+  if (!doc[CONFIG_BLE_SLEEP_INTERVAL].isNull())
+    setBleSleepInterval(doc[CONFIG_BLE_SLEEP_INTERVAL].as<int>());
   if (!doc[CONFIG_VOLTAGE_FACTOR].isNull())
     setVoltageFactor(doc[CONFIG_VOLTAGE_FACTOR].as<float>());
   if (!doc[CONFIG_VOLTAGE_CONFIG].isNull())

@@ -597,7 +597,7 @@ void checkSleepMode(float angle, float volt) {
     delay(100);
     ledOff();
 #if defined(ESP8266)
-    uint32_t wake8266 = 60 * 60 * 1000000;
+    uint64_t wake8266 = 60 * 60 * 1000000;
     ESP.deepSleep(wake8266);
 #else
  #if defined(PIN_CHARGING)
@@ -613,7 +613,7 @@ void checkSleepMode(float angle, float volt) {
       esp_deep_sleep_start();
     }
  #endif
-    uint32_t wake32 = 60 * 60 * 1000000;
+    uint64_t wake32 = 3600000000;
     ESP.deepSleep(wake32);
 #endif
   }

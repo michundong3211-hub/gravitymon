@@ -37,6 +37,8 @@ void BrewingConfig::createJson(JsonObject& doc) const {
   doc[CONFIG_TOKEN] = getToken();
   doc[CONFIG_TOKEN2] = getToken2();
   doc[CONFIG_SLEEP_INTERVAL] = getSleepInterval();
+  doc[CONFIG_HTTP_POST_SLEEP_INTERVAL] = getHttpPostSleepInterval();
+  doc[CONFIG_BLE_SLEEP_INTERVAL] = getBleSleepInterval();
   doc[CONFIG_BATTERY_TYPE] = (int)getBatteryType();
   doc[CONFIG_VOLTAGE_FACTOR] =
       serialized(String(getVoltageFactor(), DECIMALS_BATTERY));

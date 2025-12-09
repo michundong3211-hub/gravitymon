@@ -75,7 +75,7 @@ class BrewingConfig : public BaseConfig,
 #endif
   BatteryType _batteryType;
 
-  float _voltageConfig = 4.2;
+  float _voltageConfig = 4.3;
   float _tempSensorAdjC = 0;
   int _sleepInterval = 900;
   int _httpPostSleepInterval = 900;

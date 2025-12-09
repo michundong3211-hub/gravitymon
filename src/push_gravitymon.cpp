@@ -59,6 +59,8 @@ void setupTemplateEngineGravity(GravitymonConfig* config,
   // Battery & Timer
   engine.setVal(TPL_BATTERY, voltage, DECIMALS_BATTERY);
   engine.setVal(TPL_SLEEP_INTERVAL, config->getSleepInterval());
+  engine.setVal(TPL_HTTP_POST_SLEEP_INTERVAL, config->getHttpPostSleepInterval());
+  engine.setVal(TPL_BLE_SLEEP_INTERVAL, config->getBleSleepInterval());
 
   engine.setVal(TPL_BATTERY_PERCENT,
                 getBatteryPercentage(voltage, BatteryType::LithiumIon));

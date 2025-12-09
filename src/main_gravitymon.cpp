@@ -457,7 +457,7 @@ void goToSleep(int sleepInterval) {
   PERF_PUSH();
 
   if (myConfig.isBatterySaving() &&
-      getBatteryPercentage(volt, BatteryType::LithiumIon) < 41.67) {
+      getBatteryPercentage(volt, BatteryType::LithiumIon) < 41.67) {   // 电压到 3.5V 进入省电模式
     sleepInterval = 3600;
     Log.notice(F("MAIN: Battery saving is enabled, sleeping for %ds." CR),
                sleepInterval);
@@ -497,7 +497,7 @@ void loop() {
       }
 
       if (loopReadGravity()) {
-        goToSleep(myConfig.getSleepInterval());   //TODO 将 wifi 和 bluetooth 的 sleepIntarval 取最大公约数
+        goToSleep(myConfig.getSleepInterval()); 
       }
 
       // If the sensor is moving and we are not getting a clear reading, we

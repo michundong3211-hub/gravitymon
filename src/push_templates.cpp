@@ -86,8 +86,6 @@ const char iGravityHttpPostFormat[] PROGMEM =
     "\"ID\": \"${id}\", "
     "\"token\": \"${token}\", "
     "\"interval\": ${sleep-interval}, "
-    "\"http-post-sleep-interval\": ${http-post-sleep-interval}, "
-    "\"ble-sleep-interval\": ${ble-sleep-interval}, "
     "\"temperature\": ${temp}, "
     "\"temp_units\": \"${temp-unit}\", "
     "\"gravity\": ${gravity}, "

@@ -256,8 +256,6 @@ class GravitymonConfig : public BrewingConfig, public GyroConfigInterface {
 
   // Wrappers for GyroConfig
   int getSleepInterval() const { return BrewingConfig::getSleepInterval(); }
-  int getHttpPostSleepInterval() const { return BrewingConfig::getHttpPostSleepInterval(); }
-  int getBleSleepInterval() const { return BrewingConfig::getBleSleepInterval(); }
   bool saveFile() { return BaseConfig::saveFile(); }
 };
 

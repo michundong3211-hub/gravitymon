@@ -37,6 +37,8 @@ constexpr auto CONFIG_TOKEN = "token";
 constexpr auto CONFIG_TOKEN2 = "token2";
 constexpr auto CONFIG_USE_WIFI_DIRECT = "use_wifi_direct";
 constexpr auto CONFIG_SLEEP_INTERVAL = "sleep_interval";
+constexpr auto CONFIG_USE_HTTP_POST = "use_http_post";
+constexpr auto CONFIG_USE_BLE = "use_ble";
 constexpr auto CONFIG_VOLTAGE_FACTOR = "voltage_factor";
 constexpr auto CONFIG_VOLTAGE_CONFIG = "voltage_config";
 constexpr auto CONFIG_BATTERY_TYPE = "battery_type";
@@ -76,6 +78,8 @@ class BrewingConfig : public BaseConfig,
   float _voltageConfig = 4.3;
   float _tempSensorAdjC = 0;
   int _sleepInterval = 900;
+  bool _useHttpPost = true;
+  bool _useBle = false;
 
   bool _wifiDirect = false;
 #if defined(ESP8266)
@@ -123,6 +127,18 @@ class BrewingConfig : public BaseConfig,
   }
   void setSleepInterval(String s) {
     _sleepInterval = s.toInt();
+    _saveNeeded = true;
+  }
+
+  bool getUseHttpPost() const { return _useHttpPost; }
+  void setUseHttpPost(bool b) {
+    _useHttpPost = b;
+    _saveNeeded = true;
+  }
+
+  bool getUseBle() const { return _useBle; }
+  void setUseBle(bool b) {
+    _useBle = b;
     _saveNeeded = true;
   }
 
@@ -179,10 +195,7 @@ class BrewingConfig : public BaseConfig,
   }
 
   bool isWifiPushActive() const {
-    return (hasTargetHttpPost() || hasTargetHttpPost2() || hasTargetHttpGet() ||
-            hasTargetInfluxDb2() || hasTargetMqtt())
-               ? true
-               : false;
+    return (_useHttpPost || hasTargetHttpGet() || hasTargetInfluxDb2() || hasTargetMqtt()) ? true : false;
   }
 
   int getPushIntervalPost() const { return _pushIntervalPost; }

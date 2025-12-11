@@ -336,7 +336,7 @@ bool loopReadGravity() {
       PERF_BEGIN("loop-push");
 
 #if defined(ENABLE_BLE)
-      if (myConfig.isBleActive() && angleValid) {
+      if (myConfig.getUseBle() && myConfig.isBleActive() && angleValid) {
         myBleSender.init();
 
         switch (myConfig.getGravitymonBleFormat()) {

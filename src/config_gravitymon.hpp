@@ -84,7 +84,7 @@ class GravitymonConfig : public BrewingConfig, public GyroConfigInterface {
   bool _gyroSwapXY = false;
   bool _gyroFilter = false;
   bool _gyroTemp = false;
-  bool _batterySaving = true;
+  bool _batterySaving = false;
   bool _pinChargingMode = false;
 
   char _gravityUnit = 'G';

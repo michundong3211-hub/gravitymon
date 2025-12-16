@@ -37,6 +37,8 @@ constexpr auto CONFIG_TOKEN = "token";
 constexpr auto CONFIG_TOKEN2 = "token2";
 constexpr auto CONFIG_USE_WIFI_DIRECT = "use_wifi_direct";
 constexpr auto CONFIG_SLEEP_INTERVAL = "sleep_interval";
+constexpr auto CONFIG_HTTP_POST_SLEEP_INTERVAL = "http_post_sleep_interval";
+constexpr auto CONFIG_BLE_SLEEP_INTERVAL = "ble_sleep_interval";
 constexpr auto CONFIG_USE_HTTP_POST = "use_http_post";
 constexpr auto CONFIG_USE_BLE = "use_ble";
 constexpr auto CONFIG_VOLTAGE_FACTOR = "voltage_factor";
@@ -78,6 +80,8 @@ class BrewingConfig : public BaseConfig,
   float _voltageConfig = 4.3;
   float _tempSensorAdjC = 0;
   int _sleepInterval = 900;
+  int _httpPostSleepInterval = 900;
+  int _bleSleepInterval = 15;
   bool _useHttpPost = true;
   bool _useBle = false;
 
@@ -127,6 +131,26 @@ class BrewingConfig : public BaseConfig,
   }
   void setSleepInterval(String s) {
     _sleepInterval = s.toInt();
+    _saveNeeded = true;
+  }
+
+  int getHttpPostSleepInterval() const { return _httpPostSleepInterval; }
+  void setHttpPostSleepInterval(int v) {
+    _httpPostSleepInterval = v;
+    _saveNeeded = true;
+  }
+  void setHttpPostSleepInterval(String s) {
+    _httpPostSleepInterval = s.toInt();
+    _saveNeeded = true;
+  }
+
+  int getBleSleepInterval() const { return _bleSleepInterval; }
+  void setBleSleepInterval(int v) {
+    _bleSleepInterval = v;
+    _saveNeeded = true;
+  }
+  void setBleSleepInterval(String s) {
+    _bleSleepInterval = s.toInt();
     _saveNeeded = true;
   }
 

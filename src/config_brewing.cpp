@@ -37,6 +37,8 @@ void BrewingConfig::createJson(JsonObject& doc) const {
   doc[CONFIG_TOKEN] = getToken();
   doc[CONFIG_TOKEN2] = getToken2();
   doc[CONFIG_SLEEP_INTERVAL] = getSleepInterval();
+  doc[CONFIG_HTTP_POST_SLEEP_INTERVAL] = getHttpPostSleepInterval();
+  doc[CONFIG_BLE_SLEEP_INTERVAL] = getBleSleepInterval();
   doc[CONFIG_USE_HTTP_POST] = getUseHttpPost();
   doc[CONFIG_USE_BLE] = getUseBle();
   doc[CONFIG_BATTERY_TYPE] = (int)getBatteryType();
@@ -70,6 +72,10 @@ void BrewingConfig::parseJson(JsonObject& doc) {
 
   if (!doc[CONFIG_SLEEP_INTERVAL].isNull())
     setSleepInterval(doc[CONFIG_SLEEP_INTERVAL].as<int>());
+  if (!doc[CONFIG_HTTP_POST_SLEEP_INTERVAL].isNull())
+    setHttpPostSleepInterval(doc[CONFIG_HTTP_POST_SLEEP_INTERVAL].as<int>());
+  if (!doc[CONFIG_BLE_SLEEP_INTERVAL].isNull())
+    setBleSleepInterval(doc[CONFIG_BLE_SLEEP_INTERVAL].as<int>());
   if (!doc[CONFIG_USE_HTTP_POST].isNull())
     setUseHttpPost(doc[CONFIG_USE_HTTP_POST].as<bool>());
   if (!doc[CONFIG_USE_BLE].isNull())

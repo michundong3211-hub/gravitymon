@@ -456,12 +456,13 @@ void goToSleep(int sleepInterval) {
   PERF_END("run-time");
   PERF_PUSH();
 
-  if (myConfig.isBatterySaving() &&
+  // 禁用省电模式
+  /* if (myConfig.isBatterySaving() &&
       getBatteryPercentage(volt, BatteryType::LithiumIon) < 41.67) {   // 电压到 3.5V 进入省电模式
     sleepInterval = 3600;
     Log.notice(F("MAIN: Battery saving is enabled, sleeping for %ds." CR),
                sleepInterval);
-  }
+  } */
 
   myWifi.stopDoubleReset();  // Ensure we dont go into wifi mode when wakeup
   LittleFS.end();

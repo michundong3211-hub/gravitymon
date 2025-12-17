@@ -256,8 +256,18 @@ class GravitymonConfig : public BrewingConfig, public GyroConfigInterface {
 
   // Wrappers for GyroConfig
   int getSleepInterval() const { return BrewingConfig::getSleepInterval(); }
-  int getHttpPostSleepInterval() const { return BrewingConfig::getHttpPostSleepInterval(); }
-  int getBleSleepInterval() const { return BrewingConfig::getBleSleepInterval(); }
+  int getHttpPostSleepInterval() const {
+    if (BrewingConfig::getUseHttpPost() == false) {
+      return 0;  // 如果http关闭，返回0表示关闭
+    }
+    return BrewingConfig::getHttpPostSleepInterval();
+  }
+  int getBleSleepInterval() const {
+    if (BrewingConfig::getUseBle() == false) {
+      return 0;  // 如果ble关闭，返回0表示关闭
+    }
+    return BrewingConfig::getBleSleepInterval();
+  }
   bool saveFile() { return BaseConfig::saveFile(); }
 };
 

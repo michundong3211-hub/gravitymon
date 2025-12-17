@@ -397,7 +397,7 @@ bool loopReadGravity() {
           myConfig.setHeader1HttpPost("Content-Type: application/json");
           myConfig.setHeader2HttpPost("");
           push.sendHttpPost(payload);
-        } else if (angleValid) {
+        } else if (angleValid && myConfig.isWifiPushActive()) {
           Log.notice(F("Main: Sending data to all defined push targets." CR));
 
           TemplatingEngine engine;

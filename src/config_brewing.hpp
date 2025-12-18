@@ -81,7 +81,7 @@ class BrewingConfig : public BaseConfig,
   float _tempSensorAdjC = 0;
   int _sleepInterval = 900;
   int _httpPostSleepInterval = 900;
-  int _bleSleepInterval = 15;
+  int _bleSleepInterval = 120;
   bool _useHttpPost = true;
   bool _useBle = false;
 

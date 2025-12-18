@@ -549,8 +549,8 @@ void checkSleepMode(float angle, float volt) {
     Log.notice(F("MAIN: Sleep mode disabled from web interface." CR));
 #endif
     runMode = RunMode::configurationMode;
-  } else if (volt > myConfig.getVoltageConfig() || (volt < myConfig.getVoltageConfig() && (angle > 85 && angle < 95)) ) {   
-    // 去除平放进入 config 模式逻辑，volt > myConfig.getVoltageConfig() || (volt < myConfig.getVoltageConfig() && (angle > 85 && angle < 95)) 
+  } else if (volt > myConfig.getVoltageConfig()) {
+    // 去除平放进入 config 模式逻辑，原逻辑：volt > myConfig.getVoltageConfig() || (volt < myConfig.getVoltageConfig() && (angle > 85 && angle < 95)) 
     runMode = RunMode::configurationMode;
   } else if (angle < 15 && myConfig.isStorageSleep()) {
     runMode = RunMode::storageMode;

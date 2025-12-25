@@ -52,7 +52,7 @@ class MPU6050Gyro : public GyroSensorInterface {
   GyroResultData readSensor(GyroMode mode);
   const char* getGyroFamily();
   uint8_t getGyroID() { return _accelgyro.getDeviceID(); }
-  bool needCalibration() { return true; }
+  bool needCalibration() { return false; }
 };
 
 #endif  // GRAVITYMON

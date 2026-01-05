@@ -11,3 +11,4 @@ src_docs/_build/*
 cad/*
 .gemini/
 mise.toml
+.idea/

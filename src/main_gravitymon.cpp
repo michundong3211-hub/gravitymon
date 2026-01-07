@@ -91,6 +91,7 @@ uint32_t runtimeMillis;   // Used to calculate the total time since start/wakeup
 uint32_t stableGyroMillis;  // Used to calculate the total time since last
                             // stable gyro reading
 RunMode runMode = RunMode::measurementMode;
+uint32_t configMillis = 0;  // Timestamp for tracking inactivity in wifiSetupMode/configurationMode to trigger a device restart.
 
 void checkSleepMode(float angle, float volt);
 void runGpioHardwareTests();
@@ -480,6 +481,18 @@ void loop() {
 
     case RunMode::wifiSetupMode:
     case RunMode::configurationMode:
+      // If the device stays in setup/config mode for too long without activity,
+      // restart to conserve power and ensure stability.
+      if (configMillis == 0) {
+        // Initialize timer when entering config/setup mode
+        configMillis = millis();
+      } else if (millis() - configMillis > 5 * 60 * 1000L) {
+        // If 5 minutes of inactivity, restart the device
+        Log.notice(
+            F("Main: Inactivity timer expired, restarting device." CR));
+        delay(200); // Give time for log message to be sent
+        ESP.restart();
+      }
       myWebServer.loop();
       myWifi.loop();
       loopGravityOnInterval();
@@ -487,6 +500,8 @@ void loop() {
       break;
 
     case RunMode::measurementMode:
+      // Reset the config mode inactivity timer when operating in normal measurement mode.
+      configMillis = 0;
       // If we didnt get a wifi connection, we enter sleep for a short time to
       // conserve battery.
       if (!myWifi.isConnected() &&
@@ -494,11 +509,11 @@ void loop() {
                                           // defined push targets.
         Log.notice(
             F("MAIN: No connection to wifi established, sleeping for 60s." CR));
-        goToSleep(60);
+        goToSleep(300);
       }
 
       if (loopReadGravity()) {
-        goToSleep(myConfig.getSleepInterval()); 
+        goToSleep(myConfig.getSleepInterval());
       }
 
       // If the sensor is moving and we are not getting a clear reading, we

@@ -257,8 +257,7 @@ void setup() {
       // We cant use LED on ESP32C3 since that pin is connected to GYRO
       Log.notice(F("LED: BUILTIN_LED=%d, LED_BUILTIN=%d, PIN_SDA=%d, PIN_SCL=%d, Setting LED to GREEN for gravity mode." CR), 
                  BUILTIN_LED, LED_BUILTIN, PIN_SDA, PIN_SCL);
-      ledOn(
-          LedColor::GREEN);  // Green or fast flashing to indicate gravity mode
+      ledOn(LedColor::GREEN);  // Green or fast flashing to indicate gravity mode
       break;
   }
 
@@ -508,7 +507,7 @@ void loop() {
           myConfig.isWifiPushActive()) {  // no connection to wifi and we have
                                           // defined push targets.
         Log.notice(
-            F("MAIN: No connection to wifi established, sleeping for 60s." CR));
+            F("MAIN: No connection to wifi established, sleeping for 300s." CR));
         goToSleep(300);
       }
 
@@ -574,10 +573,10 @@ void checkSleepMode(float angle, float volt) {
   }
 
 #if defined(PIN_CHARGING)
-  // If there is voltage on the storage pin, we enter storage mode.
+  // If there is voltage on the storage pin, we enter wifi mode.
   if (myConfig.isPinChargingMode() && checkPinCharging(PIN_CHARGING)) {
     Log.info(F("MAIN: Charging pin active." CR));
-    runMode = RunMode::storageMode;
+    runMode = RunMode::wifiSetupMode;
   }
 #endif
 

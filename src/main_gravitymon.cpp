@@ -612,8 +612,10 @@ void checkSleepMode(float angle, float volt) {
     delay(100);
     ledOff();
 #if defined(ESP8266)
-    uint64_t wake8266 = 60 * 60 * 1000000;
+    delay(100);
+    uint64_t wake8266 = 3600000000;
     ESP.deepSleep(wake8266);
+    delay(100);
 #else
  #if defined(PIN_CHARGING)
     if (myConfig.isPinChargingMode()) {

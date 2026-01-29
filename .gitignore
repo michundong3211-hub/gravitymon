@@ -12,3 +12,4 @@ cad/*
 .gemini/
 mise.toml
 .idea/
+bin/

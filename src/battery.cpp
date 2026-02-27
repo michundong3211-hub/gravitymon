@@ -75,6 +75,8 @@ void BatteryVoltage::read() {
   _batteryVoltage = ((3.1 / ((1 << SOC_ADC_MAX_BITWIDTH) - 1)) * v) * factor;
 #elif defined(ESP32C3)
   _batteryVoltage = ((2.5 / ((1 << SOC_ADC_MAX_BITWIDTH) - 1)) * v) * factor;
+#elif defined(ESP32C6)
+  _batteryVoltage = ((3.3 / ((1 << SOC_ADC_MAX_BITWIDTH) - 1)) * v) * factor;
 #endif
 
 #if LOG_LEVEL == 6

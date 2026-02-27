@@ -681,6 +681,9 @@ void BrewingWebServer::loop() {
       case CHIP_ESP32C3:
         cpu[PARAM_FAMILY] = "ESP32C3";
         break;
+      case CHIP_ESP32C6:
+        cpu[PARAM_FAMILY] = "ESP32C6";
+        break;
       case CHIP_ESP32H2:
         cpu[PARAM_FAMILY] = "ESP32H2";
         break;

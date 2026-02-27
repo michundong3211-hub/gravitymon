@@ -1,6 +1,7 @@
 Import("env")
 import shutil
 
+
 def get_build_flag_value(flag_name):
     build_flags = env.ParseFlags(env['BUILD_FLAGS'])
     flags_with_value_list = [build_flag for build_flag in build_flags.get('CPPDEFINES') if type(build_flag) == list]
@@ -41,6 +42,17 @@ def after_build(source, target, env):
         shutil.copyfile( source, target )
 
         target = dir + "/bin/partitions32c3.bin"
+        source = dir + "/.pio/build/" + name + "/partitions.bin"
+        print( "Copy file : " + source + " -> " + target )
+        shutil.copyfile( source, target )
+
+    elif name == "gravity-32c6" :
+        target = dir + "/bin/firmware32c6.bin"
+        source = dir + "/.pio/build/" + name + "/firmware.bin"
+        print( "Copy file : " + source + " -> " + target )
+        shutil.copyfile( source, target )
+
+        target = dir + "/bin/partitions32c6.bin"
         source = dir + "/.pio/build/" + name + "/partitions.bin"
         print( "Copy file : " + source + " -> " + target )
         shutil.copyfile( source, target )

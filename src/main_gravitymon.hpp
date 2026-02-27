@@ -39,17 +39,6 @@ SOFTWARE.
 #define PIN_VOLT PIN_A0
 #define CFG_FILENAMEBIN "firmware.bin"
 
-// #elif defined(WEMOS_D1_MINI32) // Support removed for this board
-// // Hardware config for ESP32-d1-mini, iSpindel hardware
-// // ------------------------------------------------------
-// #define PIN_SDA D3
-// #define PIN_SCL D4
-// #define PIN_DS D6
-// #define PIN_CFG1 D8
-// #define PIN_CFG2 D7
-// #define PIN_VOLT PIN_A0
-// #define CFG_FILENAMEBIN "firmware32.bin"
-
 #elif defined(LOLIN_C3_MINI)
 // Hardware config for ESP32-c3-mini, iSpindel hardware
 // 在 Lolin C3 Mini 开发板基础上，将 LED 改到 GPIO8 引脚上
@@ -63,88 +52,12 @@ SOFTWARE.
 #define PIN_CHARGING A1  // Needs to be an Analog and RTC connected pin
 #define CFG_FILENAMEBIN "firmware32c3.bin"
 
-#elif defined(LOLIN_C3_PICO)
-// Hardware config for ESP32-c3-pico, iSpindel hardware
-// ------------------------------------------------------
-#define PIN_SDA 7
-#define PIN_SCL 6
-#define PIN_DS A0
-#define PIN_VOLT A3
-#define PIN_CFG1 A5
-#define PIN_CFG2 A4
-#define PIN_CHARGING 10  // Needs to be an Analog and RTC connected pin
-#define CFG_FILENAMEBIN "firmware32c3pico.bin"
-
-#elif defined(WAVESHARE_ESP32C3_ZERO)
-// Hardware config for ESP32-c3-zero, iSpindel hardware
-// ------------------------------------------------------
-// IO10 is connected to RBG LED
-// A2. IO8, IO9 are strapping pins
-#define PIN_SDA IO6
-#define PIN_SCL IO7
-#define PIN_DS IO5
-#define PIN_VOLT A0
-#define PIN_CFG1 A1
-#define PIN_CFG2 A3
-#define PIN_CHARGING A4  // Needs to be an Analog and RTC connected pin
-#define CFG_FILENAMEBIN "firmware32c3zero.bin"
-
-#elif defined(LOLIN_S2_MINI)
-// Hardware config for ESP32-s2-mini, iSpindel hardware
-// ------------------------------------------------------
-#define PIN_SDA A17
-#define PIN_SCL A15
-#define PIN_CFG1 A11
-#define PIN_CFG2 A10
-#define PIN_DS A8
-#define PIN_VOLT A2
-#define PIN_CHARGING A6  // Needs to be an Analog and RTC connected pin
-#define CFG_FILENAMEBIN "firmware32s2.bin"
-
-#elif defined(LOLIN_S3_MINI)
-// Hardware config for ESP32-s3-mini, iSpindel hardware
-// ------------------------------------------------------
-#define PIN_SDA A17
-#define PIN_SCL A15
-#define PIN_CFG1 A10
-#define PIN_CFG2 A9
-#define PIN_DS A12
-#define PIN_VOLT A1
-#define PIN_CHARGING A11  // Needs to be an Analog and RTC connected pin
-#define CFG_FILENAMEBIN "firmware32s3.bin"
-
-#elif defined(OLIMEX_ESP32C3_DEVKIT_LIPO)
-// Hardware config for ESP32C3 from Olimex with build in Charger
-// (ESP32-C3-DevKit-Lipo)
-// ------------------------------------------------------
-#define PIN_SCL IO0
-#define PIN_SDA IO1
-#define PIN_DS IO5  // implemetation with DS18 not tested
-#define PIN_VOLT IO3
-#define PIN_CFG1 IO4
-#define PIN_CFG2 IO20
-#define CFG_FILENAMEBIN "custom-olimex_esp32c3_devkit_lipo.bin"
-
-#elif defined(TENSTAR_ESP32C3_SUPER_MINI)
-// Hardware config for SUPER_MINI_ESP32C3, iSpindel hardware
-// ------------------------------------------------------
-// IO8 is LED pin
-// A2, IO8, IO9 is strapping pin
-#define PIN_SDA IO7
-#define PIN_SCL IO6
-#define PIN_DS A0
-#define PIN_VOLT A3
-#define PIN_CHARGING A4  // Needs to be an Analog and RTC connected pin
-#define PIN_CFG1 IO10
-#define PIN_CFG2 A1
-#define CFG_FILENAMEBIN "firmware32c3supermini.bin"
-
 #else
 #warning "Unknown board type"
 #endif
 
 #if !defined(ESP8266) && !defined(ESP32) && !defined(ESP32C2) && \
-    !defined(ESP32S3) && !defined(ESP32S2)
+    !defined(ESP32S3) && !defined(ESP32S2) && !defined(ESP32C6)
 #error "Target CPU is not defined or unknown!"
 #endif
 

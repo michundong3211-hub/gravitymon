@@ -55,12 +55,12 @@ SOFTWARE.
 #elif defined(ESP32C6)
 // Hardware config for ESP32-C6 DevKit
 // ------------------------------------------------------
-#define PIN_SDA 8
-#define PIN_SCL 9
+#define PIN_SDA SDA
+#define PIN_SCL SCL
 #define PIN_DS A0
 #define PIN_VOLT A3
-#define PIN_CFG1 4
-#define PIN_CFG2 5
+#define PIN_CFG1 A5
+#define PIN_CFG2 A4
 #define PIN_CHARGING A1
 #define CFG_FILENAMEBIN "firmware32c6.bin"
 

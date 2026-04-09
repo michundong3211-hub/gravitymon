@@ -85,14 +85,14 @@ class GravitymonConfig : public BrewingConfig, public GyroConfigInterface {
   bool _gyroFilter = false;
   bool _gyroTemp = false;
   bool _batterySaving = false;
-  bool _pinChargingMode = false;
+  bool _pinChargingMode = true;
 
   char _gravityUnit = 'G';
 
   float _maxFormulaCreationDeviation = 0.01;  // SG
   float _defaultCalibrationTemp = 20.0;       // C
 
-  int _gyroSensorMovingThreashold = 500;
+  int _gyroSensorMovingThreashold = 1000;
   int _gyroReadCount = 50;
   int _gyroReadDelay = 3150;  // us, empirical, to hold sampling to 200 Hz
 

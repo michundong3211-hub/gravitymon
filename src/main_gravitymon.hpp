@@ -60,7 +60,7 @@ SOFTWARE.
 #define PIN_VOLT A3
 #define PIN_CFG1 A5
 #define PIN_CFG2 A4
-#define PIN_CHARGING A1  // Needs to be an Analog and RTC connected pin
+#define PIN_CHARGING A3  // Needs to be an Analog and RTC connected pin
 #define CFG_FILENAMEBIN "firmware32c3.bin"
 
 #elif defined(LOLIN_C3_PICO)

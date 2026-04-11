@@ -84,8 +84,7 @@ TempSensor myTempSensor(&myConfig, &myGyro);
 RTC_DATA_ATTR GravityVelocityData data = {0};
 #endif
 LoopTimer timerLoop(200);
-bool sleepModeAlwaysSkip =
-    false;  // Flag set in web interface to override normal behaviour
+bool sleepModeAlwaysSkip = false;  // Flag set in web interface to override normal behaviour
 uint32_t pushMillis = 0;  // Used to control how often we will send push data
 uint32_t runtimeMillis;   // Used to calculate the total time since start/wakeup
 uint32_t stableGyroMillis;  // Used to calculate the total time since last

@@ -1,4 +1,5 @@
 Import("env")
+import os
 import shutil
 
 def get_build_flag_value(flag_name):
@@ -11,6 +12,9 @@ def after_build(source, target, env):
     print( "Executing custom step " )
     dir    = env.GetLaunchDir()
     name   = env.get( "PIOENV" )
+
+    # Ensure bin/ exists (locally it is gitignored and may not exist)
+    os.makedirs(dir + "/bin", exist_ok=True)
 
     # Gravity
 

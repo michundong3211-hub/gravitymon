@@ -42,6 +42,15 @@ enum GyroType {
   GYRO_ICM42670P = 2,
 };
 
+// The hardware only uses one gyro per platform, 8266 boards use MPU6050
+// and ESP32 boards use ICM42670P. Detection is gated to the expected chip
+// so the two can never be misidentified (both answer on 0x68/0x75).
+#if defined(ESP8266)
+constexpr GyroType platformGyroType = GyroType::GYRO_MPU6050;
+#else
+constexpr GyroType platformGyroType = GyroType::GYRO_ICM42670P;
+#endif
+
 #if defined(ESP32) && defined(ENABLE_RTCMEM)
 
 #include <esp_attr.h>
@@ -111,6 +120,7 @@ class GyroConfigInterface {
   virtual bool isGyroSwapXY() const = 0;
   virtual int getGyroSensorMovingThreashold() const = 0;
   virtual GyroType getGyroType() const = 0;
+  virtual void setGyroType(GyroType t) = 0;
 
   // Methods for ICM42670p
   virtual int getSleepInterval() const = 0;
@@ -170,11 +180,13 @@ class GyroSensor : public SecondayTempSensorInterface {
   float _temp = 0;
   float _initialSensorTemp = INVALID_TEMPERATURE;
   bool _valid = false;
+  bool _retried = false;
   GyroMode _currentMode = GyroMode::GYRO_UNCONFIGURED;
 
   void debug();
   void applyCalibration();
   void dumpCalibration();
+  void setupImpl(uint8_t& addr);
 
  public:
   explicit GyroSensor(GyroConfigInterface* gyroConfig) {

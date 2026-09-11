@@ -176,7 +176,10 @@ void setup() {
       break;
 
     default:
-      if (myConfig.getGyroType() == GyroType::GYRO_NONE) {
+      // The cached gyro type must match the platform (8266=MPU6050,
+      // ESP32=ICM42670P). Re-detect when the type is missing or stale so
+      // devices carrying a wrong value recover on the next boot.
+      if (myConfig.getGyroType() != platformGyroType) {
         myConfig.setGyroType(myGyro.detectGyro());
         myConfig.saveFile();
       }

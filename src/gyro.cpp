@@ -134,32 +134,40 @@ bool GyroSensor::setup(GyroMode mode, bool force) {
     }
     if (_impl->setup(mode, force)) {
       _currentMode = mode;
-      _retried = false;
-    }
-  } else {
-    _currentMode = GyroMode::GYRO_UNCONFIGURED;
-
-    // Self-heal: the cached gyro type failed to answer, re-detect once
-    // within this boot instead of failing until the next restart.
-    if (!_retried) {
-      _retried = true;
-      GyroType detected = detectGyro();
-      if (detected != _gyroConfig->getGyroType()) {
-        Log.warning(
-            F("GYRO: Setup failed, re-detecting gyro, new type=%d." CR),
-            (int)detected);
-        _gyroConfig->setGyroType(detected);
-        _gyroConfig->saveFile();
-      }
-      setupImpl(addr);
-      if (_impl && _impl->setup(mode, force)) {
-        _currentMode = mode;
-        _retried = false;
-      }
+      return true;
     }
   }
 
-  return _currentMode != GyroMode::GYRO_UNCONFIGURED;
+  // Both detection and driver initialization can fail. Discard the failed
+  // instance and RTC shortcut before attempting recovery once per boot.
+  _impl.reset();
+  _currentMode = GyroMode::GYRO_UNCONFIGURED;
+#if defined(ESP32) && defined(ENABLE_RTCMEM)
+  myRtcGyroData.IsDataAvailable = 0;
+#endif
+
+  if (!_retried) {
+    _retried = true;
+    GyroType detected = detectGyro();
+    Log.warning(F("GYRO: Setup failed, retrying gyro, type=%d." CR),
+                (int)detected);
+    if (detected != _gyroConfig->getGyroType()) {
+      _gyroConfig->setGyroType(detected);
+      _gyroConfig->saveFile();
+    }
+    setupImpl(addr);
+    if (_impl && _impl->setup(mode, force)) {
+      _currentMode = mode;
+      return true;
+    }
+    _impl.reset();
+#if defined(ESP32) && defined(ENABLE_RTCMEM)
+    myRtcGyroData.IsDataAvailable = 0;
+#endif
+  }
+
+  _currentMode = GyroMode::GYRO_UNCONFIGURED;
+  return false;
 }
 
 bool GyroSensor::read() {

@@ -1,6 +1,19 @@
 Import("env")
 import os
 import shutil
+from datetime import datetime
+
+# 打包输出: bin/<年.月.日.时分>/<firmware|partitions><芯片>-<版本>-<年.月.日.时分>.bin
+CHIP_NAMES = {
+    "gravity-8266": "8266",
+    "gravity-32c3_mini": "32c3",
+    "gravity-32c3_mini_85": "32c3",
+    "gravity-32c3_pico": "32c3pico",
+    "gravity-32c3_zero": "32c3zero",
+    "gravity-32c3_supermini": "32c3supermini",
+    "gravity-32s2_mini": "32s2",
+    "gravity-32s3_mini": "32s3",
+}
 
 def get_build_flag_value(flag_name):
     build_flags = env.ParseFlags(env['BUILD_FLAGS'])
@@ -9,123 +22,40 @@ def get_build_flag_value(flag_name):
     return defines.get(flag_name)
 
 def after_build(source, target, env):
-    print( "Executing custom step " )
-    dir    = env.GetLaunchDir()
-    name   = env.get( "PIOENV" )
+    print("Executing custom step ")
+    name = env.get("PIOENV")
+    dir = env.GetLaunchDir()
 
-    # Ensure bin/ exists (locally it is gitignored and may not exist)
-    os.makedirs(dir + "/bin", exist_ok=True)
+    if name.startswith("gravity-unit"):
+        print("Skipping copy of unit test build")
+        return
 
-    # Gravity
-
-    if name == "gravity-8266" :
-        target = dir + "/bin/firmware.bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-    elif name == "gravity-unit" :
-        print( "Skipping copy of unit test build" )
-
-    # elif name == "gravity32-release" :
-    #     target = dir + "/bin/firmware32.bin"
-    #     source = dir + "/.pio/build/" + name + "/firmware.bin"
-    #     print( "Copy file : " + source + " -> " + target )
-    #     shutil.copyfile( source, target )
-
-    #     target = dir + "/bin/partitions32.bin"
-    #     source = dir + "/.pio/build/" + name + "/partitions.bin"
-    #     print( "Copy file : " + source + " -> " + target )
-    #     shutil.copyfile( source, target )
-
-    elif name == "gravity-32c3_mini" :
-        target = dir + "/bin/firmware32c3.bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-        target = dir + "/bin/partitions32c3.bin"
-        source = dir + "/.pio/build/" + name + "/partitions.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-    elif name == "gravity-32c3_pico" :
-        target = dir + "/bin/firmware32c3pico.bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-        target = dir + "/bin/partitions32c3pico.bin"
-        source = dir + "/.pio/build/" + name + "/partitions.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-    elif name == "gravity-32c3_zero" :
-        target = dir + "/bin/firmware32c3zero.bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-        target = dir + "/bin/partitions32c3zero.bin"
-        source = dir + "/.pio/build/" + name + "/partitions.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-    elif name == "gravity-32c3_supermini" :
-        target = dir + "/bin/firmware32c3supermini.bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-        target = dir + "/bin/partitions32c3supermini.bin"
-        source = dir + "/.pio/build/" + name + "/partitions.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-    elif name == "gravity-32s2_mini" :
-        target = dir + "/bin/firmware32s2.bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-        target = dir + "/bin/partitions32s2.bin"
-        source = dir + "/.pio/build/" + name + "/partitions.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-    elif name == "gravity-32s3_mini" :
-        target = dir + "/bin/firmware32s3.bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-        target = dir + "/bin/partitions32s3.bin"
-        source = dir + "/.pio/build/" + name + "/partitions.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
-
-    # elif name == "gravity32lite-release" :
-    #     target = dir + "/bin/firmware32lite.bin"
-    #     source = dir + "/.pio/build/" + name + "/firmware.bin"
-    #     print( "Copy file : " + source + " -> " + target )
-    #     shutil.copyfile( source, target )
-
-    #     target = dir + "/bin/partitions32lite.bin"
-    #     source = dir + "/.pio/build/" + name + "/partitions.bin"
-    #     print( "Copy file : " + source + " -> " + target )
-    #     shutil.copyfile( source, target )
-
-
-    # Custom boards
-
-    else:
+    chip = CHIP_NAMES.get(name)
+    if chip is None:
         board = env.BoardConfig().get_brief_data()['id']
         print("Custom board detected: " + board)
+        chip = "custom-" + board.lower()
 
-        target = dir + "/bin/custom-" + board.lower() + ".bin"
-        source = dir + "/.pio/build/" + name + "/firmware.bin"
-        print( "Copy file : " + source + " -> " + target )
-        shutil.copyfile( source, target )
+    ver = (get_build_flag_value("CFG_APPVER") or '"dev"').strip('"')
+    # 可选变体后缀 (如 13dBm / 8.5dBm), 由 build flag CFG_VARIANT 提供
+    variant = get_build_flag_value("CFG_VARIANT")
+    variant = "-" + variant.strip('"') if variant else ""
+    # 同一次打包(just build-c3)共用一个时间戳目录; 单独 pio build 时取当前时间
+    stamp = os.environ.get("PKG_STAMP") or datetime.now().strftime("%Y.%m.%d.%H%M")
+    out_dir = os.path.join(dir, "bin", stamp)
+    os.makedirs(out_dir, exist_ok=True)
 
-print( "Adding custom build step (copy firmware): ")
+    build_dir = os.path.join(dir, ".pio", "build", name)
+    for src_name, prefix in (("firmware.bin", "firmware"), ("partitions.bin", "partitions")):
+        src = os.path.join(build_dir, src_name)
+        if not os.path.isfile(src):
+            print("Skip missing: " + src)
+            continue
+        # firmware 文件名带变体; partitions 两版相同故不带
+        suffix = variant if src_name == "firmware.bin" else ""
+        dst = os.path.join(out_dir, prefix + chip + "-" + ver + suffix + "-" + stamp + ".bin")
+        print("Copy file : " + src + " -> " + dst)
+        shutil.copyfile(src, dst)
+
+print("Adding custom build step (copy firmware): ")
 env.AddPostAction("buildprog", after_build)

@@ -3,7 +3,6 @@
 set shell := ["bash", "-cu"]
 
 ui_dir := "../gravitymon-ui"
-default_env := "gravity-32c3_mini"
 
 @default:
     just --list
@@ -20,9 +19,22 @@ ui-build:
     cp dist/chart.umd.min.js.gz ../gravitymon/html/chart.umd.min.js.gz
     cp gravitymon.html ../gravitymon/html/index.html
 
-# Build firmware: just build [env]
-build env=default_env:
-    mise exec -- pio run -e {{env}}
+# file:// 依赖不会自动同步: 打包前清掉 libdeps 拷贝, 强制使用最新 espframework 源码
+[private]
+sync-espframework:
+    rm -rf .pio/libdeps/*/espframework
+
+# 打包: 不带参数 = 32c3 两个变体(13dBm + 8.5dBm)打进同一时间戳目录; 带环境名 = 只打该环境
+# 例: just build / just build gravity-8266
+build env="": sync-espframework
+    #!/usr/bin/env bash
+    set -euo pipefail
+    export PKG_STAMP="$(date +%Y.%m.%d.%H%M)"
+    if [ -n "{{env}}" ]; then
+        mise exec -- pio run -e {{env}}
+    else
+        mise exec -- pio run -e gravity-32c3_mini -e gravity-32c3_mini_85
+    fi
 
 # UI build + firmware build
 release: (ui-build) (build)

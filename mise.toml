@@ -1,4 +1,4 @@
 # Firmware toolchain: PlatformIO Core (pio CLI). Run `mise install` once.
 [tools]
 python = "3.12"
-"pipx:platformio" = "6.1.19"
+"pipx:platformio" = "6.2.0"

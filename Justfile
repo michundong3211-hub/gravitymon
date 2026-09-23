@@ -24,12 +24,11 @@ ui-build:
 sync-espframework:
     rm -rf .pio/libdeps/*/espframework
 
-# 打包: 不带参数 = 32c3 两个变体(13dBm + 8.5dBm)打进同一时间戳目录; 带环境名 = 只打该环境
+# 打包: 不带参数 = 32c3 两个变体(13dBm + 8.5dBm)写入 bin/ 固定路径; 带环境名 = 只打该环境
 # 例: just build / just build gravity-8266
 build env="": sync-espframework
     #!/usr/bin/env bash
     set -euo pipefail
-    export PKG_STAMP="$(date +%Y.%m.%d.%H%M)"
     if [ -n "{{env}}" ]; then
         mise exec -- pio run -e {{env}}
     else

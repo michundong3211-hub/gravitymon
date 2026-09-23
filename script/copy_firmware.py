@@ -1,9 +1,9 @@
 Import("env")
 import os
 import shutil
-from datetime import datetime
 
-# 打包输出: bin/<年.月.日.时分>/<firmware|partitions><芯片>-<版本>-<年.月.日.时分>.bin
+# 打包输出: bin/ 固定目录 + 固定文件名 (flash.py / version.json / OTA 依赖该路径)
+# 8.5dBm 变体的 firmware 文件名追加 -<变体> 后缀; partitions 两变体内容相同, 共用固定名
 CHIP_NAMES = {
     "gravity-8266": "8266",
     "gravity-32c3_mini": "32c3",
@@ -36,13 +36,11 @@ def after_build(source, target, env):
         print("Custom board detected: " + board)
         chip = "custom-" + board.lower()
 
-    ver = (get_build_flag_value("CFG_APPVER") or '"dev"').strip('"')
-    # 可选变体后缀 (如 13dBm / 8.5dBm), 由 build flag CFG_VARIANT 提供
+    # 可选变体后缀 (如 8.5dBm), 由 build flag CFG_VARIANT 提供
     variant = get_build_flag_value("CFG_VARIANT")
     variant = "-" + variant.strip('"') if variant else ""
-    # 同一次打包(just build-c3)共用一个时间戳目录; 单独 pio build 时取当前时间
-    stamp = os.environ.get("PKG_STAMP") or datetime.now().strftime("%Y.%m.%d.%H%M")
-    out_dir = os.path.join(dir, "bin", stamp)
+
+    out_dir = os.path.join(dir, "bin")
     os.makedirs(out_dir, exist_ok=True)
 
     build_dir = os.path.join(dir, ".pio", "build", name)
@@ -53,7 +51,7 @@ def after_build(source, target, env):
             continue
         # firmware 文件名带变体; partitions 两版相同故不带
         suffix = variant if src_name == "firmware.bin" else ""
-        dst = os.path.join(out_dir, prefix + chip + "-" + ver + suffix + "-" + stamp + ".bin")
+        dst = os.path.join(out_dir, prefix + chip + suffix + ".bin")
         print("Copy file : " + src + " -> " + dst)
         shutil.copyfile(src, dst)
 

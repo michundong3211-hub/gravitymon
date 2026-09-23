@@ -12,7 +12,7 @@ CuckooTilt（基于 [GravityMon](https://github.com/mp-se/gravitymon) 二次开�
 - 隐藏 WiFi 模式下的 Force config mode 开关（gravitymon、gravitymon-ui）。
 - 陀螺仪检测按平台门控，驱动初始化失败每次开机重试一次，并补充单元测试（gravitymon、gravitymon-ui）。
 - `/push/http-post` 页支持 Predefined formats，CuckooTilt 格式补齐字段并设为固件内置默认格式（gravitymon、gravitymon-ui）。
-- 新增 8.5dBm 低功耗变体：固件新增变体环境并经 `CFG_VARIANT` 与独立 OTA 目录分流，打包产物按时间戳目录归档，Justfile 一键打包双变体并强制同步 espframework 源码（gravitymon）。
+- 新增 8.5dBm 低功耗变体：固件新增变体环境并经 `CFG_VARIANT` 与独立 OTA 目录分流，打包产物写入 `bin/` 固定路径（8.5dBm 固件名带变体后缀），Justfile 一键打包双变体并强制同步 espframework 源码（gravitymon）。
 - OTA 地址抽为编译期宏 `CFG_OTAURL`，可按固件变体覆盖（espframework）。
 - WiFi 发射功率支持 `ESPFWK_WIFI_TX_POWER_8_5` 定义，启用 8.5dBm 档位（espframework）。
 - 打包工具链：PlatformIO 升级至 6.2.0（gravitymon）。

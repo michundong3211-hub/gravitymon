@@ -11,4 +11,3 @@ src_docs/_build/*
 cad/*
 .gemini/
 .idea/
-bin/

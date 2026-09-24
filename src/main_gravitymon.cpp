@@ -352,7 +352,9 @@ bool loopReadGravity() {
             myBleSender.sendTiltData(color, convertCtoF(tempC), gravitySG,
                                      true);
           } break;
-          case GravitymonBleFormat::BLE_GRAVITYMON_IBEACON: {
+          case GravitymonBleFormat::BLE_GRAVITYMON_IBEACON:
+          // CuckooTilt 使用与 Gravitymon iBeacon 完全相同的广播格式
+          case GravitymonBleFormat::BLE_CUCKOOTILT: {
             myBleSender.sendCustomBeaconData(myBatteryVoltage.getVoltage(),
                                              tempC, gravitySG, angle);
           } break;

@@ -669,17 +669,18 @@ void checkSleepMode(float angle, float volt) {
 #else
  #if defined(PIN_CHARGING)
     if (myConfig.isPinChargingMode()) {
+      // Storage starts without charging power; wake when power is connected.
   #if defined(ESP32C3)
       pinMode(PIN_CHARGING, INPUT_PULLDOWN);
       esp_deep_sleep_enable_gpio_wakeup(1ULL << PIN_CHARGING,
-                                        ESP_GPIO_WAKEUP_GPIO_LOW); 
+                                        ESP_GPIO_WAKEUP_GPIO_HIGH);
   #elif defined(ESP32S2) || defined(ESP32S3)
       esp_sleep_enable_ext1_wakeup(1ULL << PIN_CHARGING,
-                                   ESP_EXT1_WAKEUP_ANY_LOW);
+                                   ESP_EXT1_WAKEUP_ANY_HIGH);
   #endif
-      esp_deep_sleep_start();
     }
  #endif
+    // Enable the hourly timer as well as any charging GPIO wake-up.
     uint64_t wake32 = 3600000000;
     ESP.deepSleep(wake32);
 #endif

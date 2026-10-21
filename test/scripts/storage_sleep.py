@@ -25,6 +25,7 @@ uint32_t clockMs = 100;
 uint32_t millis() { return clockMs; }
 void delay(uint32_t ms) { clockMs += ms; }
 int power = 15, fifoCount = 0, snapshots = 0, fifoReads = 0;
+int16_t rawTemp = 0;
 bool writeFails = false, readFails = false, readMismatch = false;
 bool moving = false, setupFails = false, restoreFails = false;
 bool neverReady = false, sampleFails = false, fifoCountFails = false;
@@ -55,6 +56,8 @@ struct I2Cdev {
       assert(reg == 0x09 && count == 14);
       if (sampleFails) return 0;
       ++snapshots;
+      data[0] = static_cast<uint16_t>(rawTemp) >> 8;
+      data[1] = rawTemp & 0xFF;
       data[2] = 0x40;
     }
     return count;
@@ -83,6 +86,7 @@ class ICM42670pGyro {
 void reset() {
   power = 15;
   fifoCount = snapshots = fifoReads = 0;
+  rawTemp = 0;
   writeFails = readFails = readMismatch = moving = setupFails = restoreFails = false;
   neverReady = sampleFails = fifoCountFails = false;
   setups.clear();
@@ -111,6 +115,12 @@ int main() {
   auto result = gyro.readSensor(GYRO_RUN);
   assert(result.valid && result.angle == 1 && snapshots == 1 && fifoReads == 0);
   assert((setups == std::vector<GyroMode>{GYRO_CONTINUOUS, GYRO_RUN}));
+  // Register temperatures use the ICM scale, including negative raw values.
+  for (int16_t value : {-1280, 0, 1280}) {
+    reset(); rawTemp = value;
+    auto sample = gyro.readSensor(GYRO_RUN);
+    assert(sample.valid && fabs(sample.temp - (value / 128.0f + 25)) < 0.001f);
+  }
   reset(); fifoCount = 1; // Normal measurement consumes FIFO without reconfiguration.
   assert(gyro.readSensor(GYRO_RUN).valid);
   assert(fifoReads == 1 && snapshots == 0 && setups.empty());

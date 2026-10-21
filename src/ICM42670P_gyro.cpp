@@ -394,7 +394,7 @@ GyroResultData ICM42670pGyro::readSensor(GyroMode mode) {
 
       _result.angle = calculateAngle(ax, ay, az);
     }
-    _result.temp = (static_cast<float>(raw.temp)) / 340 + 36.53;
+    _result.temp = (static_cast<float>(raw.temp)) / 128 + 25;
   }
   return _result;
 }

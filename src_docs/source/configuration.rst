@@ -136,7 +136,7 @@ Device - Hardware
 
 * **Automatic long sleep**
 
-  Available under Device - Hardware and on the WiFi setup page. After continuous storage
+  Available under Device - Hardware in configuration mode. After continuous storage
   for the configured number of days (default 30, range 1 to 365), automatic wake-ups stop.
   Disabling this option (``storage_hibernate_days = 0``) keeps hourly angle checks enabled.
   Normal measurement or an external reset clears the storage countdown. The countdown is

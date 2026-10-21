@@ -41,6 +41,7 @@ void GravitymonConfig::createJson(JsonObject& doc) const {
   doc[CONFIG_GYRO_TYPE] = getGyroType();
   doc[CONFIG_GYRO_SWAP_XY] = isGyroSwapXY();
   doc[CONFIG_STORAGE_SLEEP] = isStorageSleep();
+  doc[CONFIG_STORAGE_HIBERNATE_DAYS] = getStorageHibernateDays();
   doc[CONFIG_GRAVITY_TEMP_ADJ] = isGravityTempAdj();
 
   JsonObject cal = doc[CONFIG_GYRO_CALIBRATION].to<JsonObject>();
@@ -84,6 +85,8 @@ void GravitymonConfig::parseJson(JsonObject& doc) {
     setGyroSwapXY(doc[CONFIG_GYRO_SWAP_XY].as<bool>());
   if (!doc[CONFIG_STORAGE_SLEEP].isNull())
     setStorageSleep(doc[CONFIG_STORAGE_SLEEP].as<bool>());
+  if (doc[CONFIG_STORAGE_HIBERNATE_DAYS].is<int>())
+    setStorageHibernateDays(doc[CONFIG_STORAGE_HIBERNATE_DAYS].as<int>());
   if (!doc[CONFIG_GRAVITY_UNIT].isNull()) {
     String s = doc[CONFIG_GRAVITY_UNIT];
     setGravityUnit(s.charAt(0));

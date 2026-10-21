@@ -51,6 +51,7 @@ SOFTWARE.
 #include <push_gravitymon.hpp>
 #include <tempsensor.hpp>
 #include <velocity.hpp>
+#include <storage_sleep.hpp>
 #include <web_gravitymon.hpp>
 
 #if defined(ESP32)
@@ -92,6 +93,22 @@ uint32_t stableGyroMillis;  // Used to calculate the total time since last
 RunMode runMode = RunMode::measurementMode;
 uint32_t configMillis = 0;  // Timestamp for tracking inactivity in wifiSetupMode/configurationMode to trigger a device restart.
 
+#if defined(ESP32)
+RTC_DATA_ATTR StorageSleepState storageSleepState;
+#else
+StorageSleepState storageSleepState;
+#endif
+
+void saveStorageSleepState() {
+#if defined(ESP8266)
+  // No other component uses the ESP8266 RTC user memory.
+  if (!ESP.rtcUserMemoryWrite(0, reinterpret_cast<uint32_t*>(&storageSleepState),
+                              sizeof(storageSleepState))) {
+    Log.error(F("MAIN: Failed to retain storage sleep countdown." CR));
+  }
+#endif
+}
+
 void checkSleepMode(float angle, float volt);
 void runGpioHardwareTests();
 
@@ -99,6 +116,15 @@ void setup() {
   PERF_BEGIN("run-time");
   PERF_BEGIN("main-setup");
   runtimeMillis = millis();
+#if defined(ESP8266)
+  if (!ESP.rtcUserMemoryRead(0, reinterpret_cast<uint32_t*>(&storageSleepState),
+                             sizeof(storageSleepState))) {
+    storageSleepState = {};
+  }
+  storageSleepState.resume(ESP.getResetInfoPtr()->reason == REASON_DEEP_SLEEP_AWAKE);
+#else
+  storageSleepState.resume(esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_TIMER);
+#endif
 
   // Main startup
   Log.notice(F("Main: Started setup for %s." CR), myConfig.getID());
@@ -472,6 +498,8 @@ void goToSleep(int sleepInterval) {
   LittleFS.end();
   delay(100);
   ledOff();
+  storageSleepState = {};
+  saveStorageSleepState();
   uint32_t wake = sleepInterval * 1000000;
   ESP.deepSleep(wake);
 }
@@ -606,8 +634,16 @@ void checkSleepMode(float angle, float volt) {
       break;
   }
 
+  if (runMode != RunMode::storageMode || myConfig.getStorageHibernateDays() == 0) {
+    storageSleepState = {};
+  }
+
   // If we are in storage mode, just go back to sleep
   if (runMode == RunMode::storageMode) {
+    bool hibernate = storageSleepState.shouldHibernate(myConfig.getStorageHibernateDays());
+    storageSleepState.magic = 0x53544F52;
+    storageSleepState.pendingSeconds = hibernate ? 0 : 3600;
+    saveStorageSleepState();
     Log.notice(
         F("Main: Charging/Storage mode entered, going to sleep for maximum "
           "time." CR));
@@ -616,6 +652,15 @@ void checkSleepMode(float angle, float volt) {
     LittleFS.end();
     delay(100);
     ledOff();
+    if (hibernate) {
+      Log.notice(F("MAIN: Storage limit reached, sleeping until external reset." CR));
+#if defined(ESP8266)
+      ESP.deepSleep(0);
+#else
+      esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_ALL);
+      esp_deep_sleep_start();
+#endif
+    }
 #if defined(ESP8266)
     delay(100);
     uint64_t wake8266 = 3600000000;

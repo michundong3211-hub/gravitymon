@@ -131,10 +131,18 @@ Device - Hardware
 
 * **Storage sleep**
 
-  When place on the cap (<5 degree tilt) the device will go into deep sleep forever (until reset). In order to wake it 
-  up you need to do a reset. One option is to attach a magnetic reed switch (default open) to the reset pin and use a 
-  magnet to force a reset without opening the tube. The reed switch is typically an electronic component of 14 mm 
-  long encapsulated in a small glass tube. See hardware section for more information, :ref:`hardware`.
+  When placed on its cap (less than 15 degrees), the device powers down its motion sensor
+  and sleeps, waking once an hour to check the angle.
+
+* **Automatic long sleep**
+
+  Available under Device - Hardware and on the WiFi setup page. After continuous storage
+  for the configured number of days (default 30, range 1 to 365), automatic wake-ups stop.
+  Disabling this option (``storage_hibernate_days = 0``) keeps hourly angle checks enabled.
+  Normal measurement or an external reset clears the storage countdown. The countdown is
+  retained in RTC memory between sleep cycles and does not require a network connection.
+  To wake from long sleep, apply an external reset, for example with a magnetic reed switch
+  connected to the reset pin. Turning the device upright alone will not wake it.
 
 * **Battery saving:**
 

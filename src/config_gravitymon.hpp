@@ -39,6 +39,7 @@ constexpr auto CONFIG_GYRO_FILTER = "gyro_filter";
 constexpr auto CONFIG_GYRO_TYPE = "gyro_type";
 constexpr auto CONFIG_GYRO_SWAP_XY = "gyro_swap_xy";
 constexpr auto CONFIG_STORAGE_SLEEP = "storage_sleep";
+constexpr auto CONFIG_STORAGE_HIBERNATE_DAYS = "storage_hibernate_days";
 constexpr auto CONFIG_FORMULA_DATA = "formula_calculation_data";
 constexpr auto CONFIG_GRAVITY = "gravity";
 constexpr auto CONFIG_BLE_TILT_COLOR = "ble_tilt_color";
@@ -82,6 +83,7 @@ class GravitymonConfig : public BrewingConfig, public GyroConfigInterface {
   bool _gravityTempAdj = false;
   bool _ignoreLowAngles = false;
   bool _storageSleep = true;
+  int _storageHibernateDays = 30;
   bool _gyroSwapXY = false;
   bool _gyroFilter = false;
   bool _gyroTemp = false;
@@ -113,6 +115,13 @@ class GravitymonConfig : public BrewingConfig, public GyroConfigInterface {
   bool isGyroTemp() const { return _gyroTemp; }
   void setGyroTemp(bool b) {
     _gyroTemp = b;
+    _saveNeeded = true;
+  }
+
+  int getStorageHibernateDays() const { return _storageHibernateDays; }
+  void setStorageHibernateDays(int days) {
+    if (days < 0 || days > 365) return;
+    _storageHibernateDays = days;
     _saveNeeded = true;
   }
 

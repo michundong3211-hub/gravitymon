@@ -611,6 +611,7 @@ void checkSleepMode(float angle, float volt) {
     Log.notice(
         F("Main: Charging/Storage mode entered, going to sleep for maximum "
           "time." CR));
+    myGyro.enterSleep(true);
     myWifi.stopDoubleReset();  // Ensure we dont go into wifi mode when wakeup
     LittleFS.end();
     delay(100);

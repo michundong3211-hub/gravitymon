@@ -238,7 +238,18 @@ bool ICM42670pGyro::setup(GyroMode mode, bool force) {
   return true;
 }
 
-GyroMode ICM42670pGyro::enterSleep(GyroMode mode) {
+GyroMode ICM42670pGyro::enterSleep(GyroMode mode, bool storage) {
+  if (storage) {
+    // The gyro must stay on for at least 45ms before being turned off.
+    delay(45);
+    // Stop both sensors and the idle oscillator; measurement sleep keeps FIFO sampling.
+    if (!I2Cdev::writeByte(_addr, ICM42670_PWR_MGMT0_REGISTER, 0x00) ||
+        I2Cdev::readByte(_addr, ICM42670_PWR_MGMT0_REGISTER, _buffer) != 1 ||
+        (_buffer[0] & 0x1F) != 0) {
+      return GyroMode::GYRO_UNCONFIGURED;
+    }
+    return GyroMode::GYRO_SLEEP;
+  }
   if (mode == GyroMode::GYRO_RUN) {
     return mode;
   }
@@ -284,12 +295,20 @@ GyroResultData ICM42670pGyro::readSensor(GyroMode mode) {
   if (mode == GyroMode::GYRO_RUN) {
     _buffer[0] = 0;
     _buffer[1] = 0;
-    I2Cdev::readBytes(_addr, 0x3D, 2, _buffer);
+    if (I2Cdev::readBytes(_addr, 0x3D, 2, _buffer) != 2) return _result;
     uint16_t count = UINT16_FROM_BUFFER(0, 1);
     count = min(count, static_cast<uint16_t>(138));
 #if LOG_LEVEL == 6
     Log.verbose(F("ICM : available packets= %d" CR), count);
 #endif
+    if (count == 0) {
+      // After storage (or cold boot), take a fresh sample instead of entering config mode.
+      delay(45);  // Minimum gyro on-time before resetting its configuration.
+      if (!setup(GyroMode::GYRO_CONTINUOUS, true)) return _result;
+      _result = readSensor(GyroMode::GYRO_CONTINUOUS);
+      if (!setup(GyroMode::GYRO_RUN, true)) _result.valid = false;
+      return _result;
+    }
     if (count > 0) {
       count = ReadFIFOPackets(count, average);
 
@@ -317,15 +336,21 @@ GyroResultData ICM42670pGyro::readSensor(GyroMode mode) {
     }
 
     for (int cnt = 0; cnt < noIterations; cnt++) {
-      // INT_STATUS_DRDY
-      while (I2Cdev::readByte(_addr, 0x36, _buffer) == 0 ||
+      // INT_STATUS_DRDY is 0x39; 0x36 is the clock/interface configuration.
+      auto sampleStart = millis();
+      while (I2Cdev::readByte(_addr, 0x39, _buffer) != 1 ||
              (_buffer[0] & 1) == 0) {
+        if (millis() - sampleStart >= 1000) {
+          Log.error(F("ICM : Timed out waiting for fresh sensor data" CR));
+          return _result;
+        }
+        delay(1);
 #if LOG_LEVEL == 6
         Log.verbose(F("INT_STATUS_DRDY: %X" CR), _buffer[0]);
 #endif
       }
 
-      I2Cdev::readBytes(_addr, 0x09, 14, _buffer);
+      if (I2Cdev::readBytes(_addr, 0x09, 14, _buffer) != 14) return _result;
       raw.temp = ((static_cast<int16_t>(_buffer[0])) << 8) | _buffer[1];
       raw.ax = ((static_cast<int16_t>(_buffer[2])) << 8) | _buffer[3];
       raw.ay = ((static_cast<int16_t>(_buffer[4])) << 8) | _buffer[5];

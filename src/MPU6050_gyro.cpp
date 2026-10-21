@@ -73,7 +73,7 @@ bool MPU6050Gyro::setup(GyroMode mode, bool force) {
   return true;
 }
 
-GyroMode MPU6050Gyro::enterSleep(GyroMode mode) {
+GyroMode MPU6050Gyro::enterSleep(GyroMode mode, bool) {
   _accelgyro.setSleepEnabled(true);
   return GyroMode::GYRO_SLEEP;
 }

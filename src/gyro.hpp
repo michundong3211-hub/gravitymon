@@ -158,7 +158,7 @@ class GyroSensorInterface {
   virtual const char* getGyroFamily();
   virtual void getGyroTestResult(JsonObject& doc);
   virtual uint8_t getGyroID();
-  virtual GyroMode enterSleep(GyroMode mode);
+  virtual GyroMode enterSleep(GyroMode mode, bool storage);
   virtual bool needCalibration();
 
   bool isSensorMoving() { return _sensorMoving; }
@@ -225,7 +225,7 @@ class GyroSensor : public SecondayTempSensorInterface {
   GyroMode getCurrentGyroMode() { return _currentMode; }
   bool hasValue() const { return _valid; }
   bool needCalibration() { return _impl ? _impl->needCalibration() : false; }
-  void enterSleep();
+  void enterSleep(bool storage = false);
 };
 
 extern GyroSensor myGyro;

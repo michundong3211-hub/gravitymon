@@ -25,8 +25,9 @@ struct { template<class... T> void notice(T...) {} template<class... T> void war
 struct { void begin(int,int) {} void setClock(int) {} void setTimeOut(int) {} } Wire;
 int wireClock = 400000, wireTimeout = 200;
 enum GyroType { GYRO_NONE, GYRO_MPU6050, GYRO_ICM42670P };
-enum GyroMode { GYRO_UNCONFIGURED, GYRO_RUN, GYRO_CONTINUOUS };
+enum GyroMode { GYRO_UNCONFIGURED, GYRO_RUN, GYRO_CONTINUOUS, GYRO_SLEEP };
 struct { uint8_t Address; uint8_t IsDataAvailable; } myRtcGyroData = {};
+struct { int bufferCount; } myRtcFilterData = {};
 #if defined(ESP8266)
 constexpr GyroType expected = GYRO_MPU6050;
 #else
@@ -43,6 +44,7 @@ int probes = 0, initCalls = 0, failedProbes = 0, failedInits = 0;
 struct Driver {
   virtual ~Driver() = default;
   bool setup(GyroMode, bool) { return ++initCalls > failedInits; }
+  GyroMode enterSleep(GyroMode mode, bool storage) { return storage ? GYRO_SLEEP : mode; }
 };
 template<GyroType type> struct Chip : Driver {
   Chip(uint8_t, Config*) {}
@@ -63,6 +65,7 @@ struct GyroSensor {
   GyroType detectGyro();
   void setupImpl(uint8_t&);
   bool setup(GyroMode, bool);
+  void enterSleep(bool storage = false);
 };
 void reset(int detectionFailures = 0, int initFailures = 0) {
   probes = initCalls = 0;
@@ -117,6 +120,21 @@ int main() {
     assert(c.type == expected && c.saves == 1);
   }
 #if defined(ESP32) && defined(ENABLE_RTCMEM)
+  { // Storage invalidates the FIFO shortcut and filter, then reinitializes on wake.
+    reset(); Config c; GyroSensor g(&c);
+    assert(g.setup(GYRO_RUN, false));
+    myRtcFilterData.bufferCount = 5;
+    g.enterSleep();
+    assert(g._currentMode == GYRO_RUN);
+    assert(myRtcGyroData.IsDataAvailable == GYRO_RTC_DATA_AVAILABLE);
+    assert(myRtcFilterData.bufferCount == 5);
+    g.enterSleep(true);
+    assert(g._currentMode == GYRO_SLEEP);
+    assert(myRtcGyroData.IsDataAvailable == 0 && myRtcFilterData.bufferCount == 0);
+    GyroSensor resumed(&c);
+    assert(resumed.setup(GYRO_RUN, false));
+    assert(initCalls == 2 && probes == 2);
+  }
   { // Preserve the existing fast path for deep-sleep resume.
     reset(); Config c; GyroSensor g(&c);
     myRtcGyroData = {0x68, GYRO_RTC_DATA_AVAILABLE};
@@ -138,6 +156,8 @@ def main():
     # Compile the production methods verbatim, not a Python model of them.
     methods = source[source.index('GyroType GyroSensor::detectGyro()'):
                      source.index('bool GyroSensor::read()')]
+    methods += source[source.index('void GyroSensor::enterSleep('):
+                      source.index('float GyroSensorInterface::calculateAngle')]
     with tempfile.TemporaryDirectory(prefix='gyro-recovery-') as directory:
         cpp = Path(directory) / 'check.cpp'
         binary = Path(directory) / 'check'

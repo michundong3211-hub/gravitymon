@@ -50,7 +50,7 @@ class ICM42670pGyro : public GyroSensorInterface {
   }
   bool setup(GyroMode mode, bool force);
   bool calibrateSensor();
-  GyroMode enterSleep(GyroMode mode);
+  GyroMode enterSleep(GyroMode mode, bool storage);
   GyroResultData readSensor(GyroMode mode);
   const char *getGyroFamily();
   void getGyroTestResult(JsonObject& doc) {}

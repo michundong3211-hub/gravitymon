@@ -198,8 +198,18 @@ bool GyroSensor::read() {
   return _valid;
 }
 
-void GyroSensor::enterSleep() {
-  if (_impl) _currentMode = _impl->enterSleep(_currentMode);
+void GyroSensor::enterSleep(bool storage) {
+#if defined(ESP32) && defined(ENABLE_RTCMEM)
+  if (storage) {
+    // Storage powers down the sensor, so its FIFO/configuration cannot be reused.
+    myRtcGyroData.IsDataAvailable = 0;
+    myRtcFilterData = {};
+  }
+#endif
+  if (_impl) _currentMode = _impl->enterSleep(_currentMode, storage);
+  if (storage && _currentMode != GyroMode::GYRO_SLEEP) {
+    Log.error(F("GYRO: Failed to power down sensor for storage." CR));
+  }
 }
 
 float GyroSensorInterface::calculateAngle(float ax, float ay, float az) {

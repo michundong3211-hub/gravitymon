@@ -289,9 +289,15 @@ void setup() {
 
     default:
 #if defined(ESP32C3) && defined(ENABLE_BLE)
+      bool wifiDue = myConfig.isWifiPushActive();
+      if (wifiDue && !myConfig.isWifiDirect()) {
+        PushIntervalTracker interval(&myConfig);
+        interval.load();
+        wifiDue = interval.hasPendingTargets();
+      }
       if (runMode == RunMode::measurementMode && myConfig.getUseBle() &&
-          myConfig.isBleActive() && !myConfig.isWifiPushActive()) {
-        ledOff();  // Keep frequent BLE-only measurement cycles dark.
+          myConfig.isBleActive() && !wifiDue) {
+        ledOff();  // HTTP may be enabled but skipped on this BLE-only cycle.
       } else
 #endif
       {

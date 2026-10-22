@@ -153,6 +153,13 @@ class PushIntervalTracker {
   bool useHttp3() { return _counters[2] == 0 ? true : false; }
   bool useInflux() { return _counters[3] == 0 ? true : false; }
   bool useMqtt() { return _counters[4] == 0 ? true : false; }
+  bool hasPendingTargets() {
+    return (_brewingConfig->hasTargetHttpPost() && useHttp1()) ||
+           (_brewingConfig->hasTargetHttpPost2() && useHttp2()) ||
+           (_brewingConfig->hasTargetHttpGet() && useHttp3()) ||
+           (_brewingConfig->hasTargetInfluxDb2() && useInflux()) ||
+           (_brewingConfig->hasTargetMqtt() && useMqtt());
+  }
   void load();
   void save();
 };

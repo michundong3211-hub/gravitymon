@@ -13,6 +13,15 @@ int wakeCause = 0, calls = 0;
 LedColor color = OFF;
 int esp_sleep_get_wakeup_cause() { return wakeCause; }
 void ledOn(LedColor value) { ++calls; color = value; }
+void ledOff() { ledOn(OFF); }
+enum class RunMode { measurementMode, configurationMode, wifiSetupMode };
+RunMode runMode = RunMode::measurementMode;
+struct Config {
+  bool ble = false, format = false, wifi = false;
+  bool getUseBle() const { return ble; }
+  bool isBleActive() const { return format; }
+  bool isWifiPushActive() const { return wifi; }
+} myConfig;
 '''
 CHECKS = r'''
 int main() {
@@ -28,6 +37,19 @@ int main() {
     assert(calls == 0 && color == OFF);
 #endif
   }
+  for (bool ble : {false, true}) {
+    for (bool format : {false, true}) {
+      for (bool wifi : {false, true}) {
+        myConfig = {ble, format, wifi};
+        measurement();
+#if defined(ESP32C3) && defined(ENABLE_BLE)
+        assert(color == (ble && format && !wifi ? OFF : GREEN));
+#else
+        assert(color == GREEN);
+#endif
+      }
+    }
+  }
 }
 '''
 
@@ -36,15 +58,18 @@ def main():
     source = (ROOT / 'src/main_gravitymon.cpp').read_text()
     startup = source.split('  runtimeMillis = millis();\n', 1)[1].split(
         '#if defined(ESP8266)', 1)[0]
+    measurement = source.split('// Do this setup for configuration mode', 1)[1].split(
+        '    default:\n', 1)[1].split('      break;', 1)[0]
     with tempfile.TemporaryDirectory(prefix='led-startup-') as directory:
         cpp, binary = Path(directory) / 'check.cpp', Path(directory) / 'check'
         cpp.write_text('#include <initializer_list>\n' + STUBS +
-                       '\nvoid startup() {\n' + startup + '\n}\n' + CHECKS)
-        for platform in ['ESP32C3', 'ESP8266', 'ESP32S3']:
-            subprocess.run(['c++', '-std=c++14', '-D' + platform, str(cpp),
+                       '\nvoid startup() {\n' + startup + '\n}\n' +
+                       '\nvoid measurement() {\n' + measurement + '\n}\n' + CHECKS)
+        for flags in [['ESP32C3', 'ENABLE_BLE'], ['ESP32C3'], ['ESP8266'], ['ESP32S3']]:
+            subprocess.run(['c++', '-std=c++14', *['-D' + flag for flag in flags], str(cpp),
                             '-o', str(binary)], check=True)
             subprocess.run([str(binary)], check=True)
-    print('PASS: C3 reset lights immediately, timer wake stays dark; other boards unchanged')
+    print('PASS: C3 reset feedback, dark BLE-only cycles, WIFI indication and other boards')
 
 
 if __name__ == '__main__':

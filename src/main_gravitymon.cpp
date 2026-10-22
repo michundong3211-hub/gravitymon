@@ -288,10 +288,15 @@ void setup() {
       break;
 
     default:
-      // We cant use LED on ESP32C3 since that pin is connected to GYRO
-      Log.notice(F("LED: BUILTIN_LED=%d, LED_BUILTIN=%d, PIN_SDA=%d, PIN_SCL=%d, Setting LED to GREEN for gravity mode." CR), 
-                 BUILTIN_LED, LED_BUILTIN, PIN_SDA, PIN_SCL);
-      ledOn(LedColor::GREEN);  // Green or fast flashing to indicate gravity mode
+#if defined(ESP32C3) && defined(ENABLE_BLE)
+      if (runMode == RunMode::measurementMode && myConfig.getUseBle() &&
+          myConfig.isBleActive() && !myConfig.isWifiPushActive()) {
+        ledOff();  // Keep frequent BLE-only measurement cycles dark.
+      } else
+#endif
+      {
+        ledOn(LedColor::GREEN);
+      }
       break;
   }
 

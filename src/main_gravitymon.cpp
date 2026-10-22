@@ -116,6 +116,12 @@ void setup() {
   PERF_BEGIN("run-time");
   PERF_BEGIN("main-setup");
   runtimeMillis = millis();
+#if defined(ESP32C3)
+  // External resets (including the magnetic switch) get immediate feedback.
+  if (esp_sleep_get_wakeup_cause() != ESP_SLEEP_WAKEUP_TIMER) {
+    ledOn(LedColor::WHITE);
+  }
+#endif
 #if defined(ESP8266)
   if (!ESP.rtcUserMemoryRead(0, reinterpret_cast<uint32_t*>(&storageSleepState),
                              sizeof(storageSleepState))) {
